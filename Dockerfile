@@ -1,13 +1,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Копируем только csproj для восстановления зависимостей
-COPY *.csproj ./
-RUN dotnet restore
-
-# Копируем всё остальное и публикуем
+# Копируем все файлы
 COPY . ./
-RUN dotnet publish -c Release -o /app/publish --no-restore
+
+# Находим csproj файл и восстанавливаем зависимости
+RUN csproj_file=$(find . -name "*.csproj" -type f | head -n 1) && \
+    dotnet restore "$csproj_file"
+
+# Публикуем приложение
+RUN csproj_file=$(find . -name "*.csproj" -type f | head -n 1) && \
+    dotnet publish "$csproj_file" -c Release -o /app/publish --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
@@ -19,4 +22,5 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 
 EXPOSE 80
 
-ENTRYPOINT ["dotnet", "DiceSimulator.dll"]
+# Находим имя DLL и запускаем
+CMD find . -name "*.dll" -not -name "System*.dll" -not -name "Microsoft*.dll" | head -n 1 | xargs -I {} dotnet {}
