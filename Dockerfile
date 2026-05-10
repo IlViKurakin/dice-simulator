@@ -1,16 +1,27 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["*.csproj", "./"]
-RUN dotnet restore
-COPY . .
-RUN dotnet publish -c Release -o /app/publish
+
+# Копируем все файлы проекта
+COPY . ./
+
+# Восстанавливаем зависимости
+RUN dotnet restore DiceSimulator.csproj
+
+# Публикуем приложение
+RUN dotnet publish DiceSimulator.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/publish .
+
+# Копируем опубликованные файлы
+COPY --from=build /app/publish ./
+
+# Настраиваем переменные окружения
+ENV ASPNETCORE_URLS=http://+:80
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Открываем порт
 EXPOSE 80
 
-# Настройка порта для Render
-ENV ASPNETCORE_URLS=http://+:${PORT}
-
+# Запускаем приложение
 ENTRYPOINT ["dotnet", "DiceSimulator.dll"]
