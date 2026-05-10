@@ -1,0 +1,42 @@
+<!-- Views/Dice/Result.cshtml -->
+@model DiceSimulator.Models.DiceRoll
+@{
+    ViewBag.Title = "Результат броска";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Результат броска</h2>
+
+    @if (Model != null)
+    {
+        var diceValues = Model.Result.Split(", ").Select(int.Parse).ToList();
+        
+        <div class="d-flex flex-wrap justify-content-center gap-2 my-4">
+            @foreach (var value in diceValues)
+            {
+                <div class="border rounded d-flex align-items-center justify-content-center"
+                     style="width: 60px; height: 60px; font-size: 24px; font-weight: bold; background-color: #f8f9fa;">
+                    @value
+                </div>
+            }
+        </div>
+
+        <div class="text-center">
+            <p><strong>Бросок #@Model.Id</strong></p>
+            <p><strong>Всего кубиков:</strong> @Model.NumberOfDice</p>
+            <p><strong>Сумма:</strong> @Model.Sum</p>
+            <p><strong>Время броска:</strong> @Model.RollTime.ToString("dd.MM.yyyy HH:mm:ss")</p>
+            <a href="@Url.Action("Index", "Dice")" class="btn btn-primary me-2">Новый бросок</a>
+            <a href="@Url.Action("History", "Dice")" class="btn btn-outline-secondary">История</a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning text-center">
+            Результат броска не найден.
+        </div>
+        <div class="text-center mt-3">
+            <a href="@Url.Action("Index", "Dice")" class="btn btn-primary">Вернуться к броскам</a>
+        </div>
+    }
+</div>

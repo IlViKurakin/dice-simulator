@@ -1,0 +1,30 @@
+<!-- Views/Dice/History.cshtml -->
+@model List<DiceSimulator.Models.DiceRoll>
+@{
+    ViewBag.Title = "История бросков";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">История бросков</h2>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <div class="list-group mt-4">
+            @foreach (var roll in Model)
+            {
+                <div class="list-group-item">
+                    <strong>Бросок #@roll.Id (@roll.RollTime.ToString("HH:mm:ss")):</strong>
+                    Кубиков: @roll.NumberOfDice | Результаты: @roll.Result | Сумма: @roll.Sum
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-center text-muted mt-4">История пуста.</p>
+    }
+
+    <div class="text-center mt-4">
+        <a href="@Url.Action("Index", "Dice")" class="btn btn-primary">Назад к броскам</a>
+    </div>
+</div>

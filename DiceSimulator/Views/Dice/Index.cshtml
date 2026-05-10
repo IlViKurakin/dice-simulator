@@ -1,0 +1,45 @@
+<!-- Views/Dice/Index.cshtml -->
+@{
+    ViewBag.Title = "Бросок кубиков";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Бросок игральных кубиков</h2>
+    <p class="text-center text-muted">Укажите количество кубиков от 1 до 10</p>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger text-center">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form action="@Url.Action("Roll", "Dice")" method="get">
+                <div class="input-group mb-3">
+                    <input type="number" name="NumberOfDice" class="form-control" min="1" max="10" placeholder="Количество кубиков" required />
+                    <button type="submit" class="btn btn-success">Бросить кубики</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (ViewBag.RecentRolls != null && ViewBag.RecentRolls.Count > 0)
+    {
+        <h4 class="text-center mt-4">Последние броски</h4>
+        <div class="list-group mt-3">
+            @foreach (var roll in ViewBag.RecentRolls)
+            {
+                <div class="list-group-item">
+                    <strong>Бросок #@roll.Id (@roll.RollTime.ToString("HH:mm:ss")):</strong>
+                    Кубиков: @roll.NumberOfDice | Результаты: @roll.Result | Сумма: @roll.Sum
+                </div>
+            }
+        </div>
+    }
+
+    <div class="text-center mt-4">
+        <a href="@Url.Action("History", "Dice")" class="btn btn-outline-info">История бросков</a>
+    </div>
+</div>
